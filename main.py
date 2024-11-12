@@ -11,33 +11,25 @@ def scrape_wall_data(token, owner_id, count=10):
     
     """
     try:
-        # Инициализация VK API
         vk_session = vk_api.VkApi(token=token)
         vk = vk_session.get_api()
-        
-        # Метод wall.get
+
         posts = vk.wall.get(owner_id=owner_id, count=count)['items']
-        
-        # Хранилище для данных
+
         scraped_data = []
-        
-        # Парсинг
+
         for post in posts:
             post_data = {}
             
-            # Извлечение id поста
             post_data['post_id'] = post['id']
-            
-            # Извлечение текста публикации
+
             post_data['text'] = post['text'].replace('\n', ' ') if 'text' in post else ''
-            
-            # Извлечение изображения под постом
+
             attachments = post.get('attachments', [])
             image_url = next((att['photo']['sizes'][-1]['url'] for att in attachments 
                               if att.get('type') == 'photo'), '')
             post_data['image_url'] = image_url
-            
-            # Извлечение количества просмотров
+
             views_count = post.get('views', {}).get('count', 0)
             post_data['views_count'] = views_count
             
